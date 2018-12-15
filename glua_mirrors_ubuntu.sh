@@ -18,8 +18,8 @@ sed '/^precise*$/d' output >output1
 
 
 #text with the name of the release installed
-$(lsb_release -a>output2)
-awk '{if(NR==5) print $2}' output2>output3
+$(lsb_release -c>output2)
+awk '{print $2}' output2>output3
 installed_release=`cat output3`
 echo $installed_release
 
