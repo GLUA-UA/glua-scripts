@@ -15,6 +15,7 @@ uniq output1>output
 sed '/^[[:space:]]*$/d' output >output1
 sed '/^\.*$/d' output1 >output
 sed '/^precise*$/d' output >output1
+available_releases=`cat output1`
 
 
 #text with the name of the release installed
@@ -24,15 +25,13 @@ installed_release=`cat output3`
 echo $installed_release
 
 #checking whether the release installed is available in our mirrors or not
-if [[ "$installed_release" =~ $(echo ^\($(paste -sd'|' output1)\)$) ]]; then # adapted from https://unix.stackexchange.com/a/111518
+if [ *"$installed_release"* == "$available_releases" ]; then
  echo "Release disponível nos mirrors"
 else
  echo "Release não disponível nos mirrors"
- rm output*;
+ rm output*
  exit 1
 fi
-
-
 
 text="###### GLUA Ubuntu Main Repos
 deb http://glua.ua.pt/pub/ubuntu/ ""$installed_release"" main restricted universe multiverse
