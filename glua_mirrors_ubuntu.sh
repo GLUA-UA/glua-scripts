@@ -25,7 +25,7 @@ installed_release=`cat output3`
 echo $installed_release
 
 #checking whether the release installed is available in our mirrors or not
-if [ *"$installed_release"* == "$available_releases" ]; then
+if [[ $available_releases =~ $installed_release ]]; then
  echo "Release disponível nos mirrors"
 else
  echo "Release não disponível nos mirrors"
