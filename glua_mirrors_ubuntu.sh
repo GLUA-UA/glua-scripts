@@ -2,7 +2,8 @@
 
 #connect to GLUA Ubuntu Mirrors via ftp and list all available releases
 
-ftp -in  glua.ua.pt <<EOF
+#run in passive mode (-p)| no-prompt(-i) | no-login(-n)
+ftp -pin  glua.ua.pt <<EOF
 user anonymous
 cd pub/ubuntu-releases
 ls -l output
