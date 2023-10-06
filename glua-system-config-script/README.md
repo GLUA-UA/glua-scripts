@@ -11,7 +11,7 @@ You can run the script by running:
 
 ```console
 wget https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/glua-system-config-script/glua-system-config-script.sh
-sudo bash install.sh
+sudo bash glua-system-config-script.sh
 ```
 
 When running, you will be prompted to select a configuration option:
