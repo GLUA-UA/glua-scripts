@@ -41,11 +41,16 @@ MMMMMMMMMMMMMMMNNmmmddddhhhhhhddmNNMmy///////////oMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNy/////dMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMdsosMMMMMMMMMMMMMMM\033[0m"
 
+if [[ $(cat /etc/os-release) != *"ID=ubuntu"* ]]; then
+    echo -e "\033[0;31mYou can only run this script in Ubuntu\033[0m"
+    exit
+fi
+
 # ------------------- Config functions -------------------
 
 install_nvidia_drivers() {
     echo -e "\033[0;33mInstalling NVIDIA drivers\033[0m"
-    sudo apt -y install nvidia-driver-535 nvidia-dkms-535
+    sudo apt install -y nvidia-driver-535 nvidia-dkms-535
 }
 
 config_mirrors() {
@@ -57,15 +62,15 @@ config_mirrors() {
 
 system_update() {
     echo -e "\033[0;33mChecking for system updates\033[0m"
-    sudo apt -y update
+    sudo apt update -y
 
     echo -e "\033[0;33mInstaling available updates\033[0m"
-    sudo apt -y upgrade
+    sudo apt upgrade -y
 }
 
 install_extra_software() {
     echo -e "\033[0;33mInstalling needed software\033[0m"
-    sudo apt -y  install curl vim build-essential git gitk default-jdk geany wireshark ubuntu-restricted-extras
+    sudo apt install -y curl vim build-essential git gitk default-jdk geany wireshark ubuntu-restricted-extras
 
     echo -e "\033[0;33mFixing groups\033[0m"
     sudo usermod -aG wireshark "$(whoami)"
@@ -84,7 +89,7 @@ fi
 # Check if zenity is installed and install it if not
 if ! [ -x "$(command -v zenity)" ]; then
     echo -e "\033[0;33mInstalling zenity\033[0m"
-    sudo apt -y install zenity
+    sudo apt install -y zenity
 fi
 
 # Menu to choose the config_option
@@ -105,7 +110,7 @@ fi
 echo -e "\033[0;33mSelected option: $config_option\033[0m"
 
 if [ "$config_option" = "Install NVIDIA drivers" ]; then
-    sudo apt -y update
+    sudo apt update -y
     install_nvidia_drivers
     echo -e "\033[0;33mDrivers installed.\033[0m"
     exit
