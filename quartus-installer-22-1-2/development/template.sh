@@ -494,7 +494,7 @@ options() {
         if (whiptail --title "Quartus Prime Lite Installer" --yesno "                 The installation path already exists.\n                      Do you want to overwrite it?" 8 75) then
             export NEWT_COLORS='root=,red'
             if (whiptail --title "WARNING" --yesno "                             ARE YOU SURE?\n\nTHIS WILL DELETE $INSTALL_PATH AND ITS CONTENTS. THERE IS NO WAY BACK!!!" 10 75) then
-                rm -rf "$INSTALL_PATH"
+                sudo rm -rf "$INSTALL_PATH"
             else
                 options
             fi
@@ -558,13 +558,21 @@ options() {
 }
 
 installation() {
+    :
     # {{{## REPLACE BY DISTRO SPECIFIC INSTALL SCRIPT ##}}}
 }
 
 questa_license() {
-    if [ "$QUESTA_FSE_ENABLE" == "true" ]; then
-        whiptail --title "Quartus Prime Lite Installer" --msgbox " Questa needs a free license in order to work. Please, to get one go to: https://licensing.intel.com/psg/ " 9 75
+    export NEWT_COLORS='root=,blue'
+    whiptail --title "Quartus Prime Lite Installer" --msgbox "Questa needs a free to use license in order to work.\n\n                    Please, read the following guide:\n https://miguelovila.com/posts/installing-quartus-prime-22-and-questa/" 10 75
+    LICENSE_PATH=$(whiptail --inputbox "Please enter the license path:" 8 75 "/path/to/license.dat" --title "License Path" 3>&1 1>&2 2>&3)
+    exitstatus=$?
+    if ! [ $exitstatus = 0 ]; then
+        whiptail --title "Quartus Prime Lite Installer" --msgbox "                 Installation aborted by user request." 7 75
+        exit 1
     fi
+    cp "$LICENSE_PATH" "$INSTALL_PATH/questa_license.dat"
+    echo 'export LM_LICENSE_FILE='$INSTALL_PATH'/questa_license.dat' >> ~/.bashrc
 }
 
 final_message() {
@@ -572,9 +580,17 @@ final_message() {
 }
 
 check_script_deps
+
 agreements
+
 options
+
 installation
-questa_license
+
+if [ "$QUESTA_FSE_ENABLE" == "true" ]; then
+    questa_license
+fi
+
 final_message
+
 exit 0

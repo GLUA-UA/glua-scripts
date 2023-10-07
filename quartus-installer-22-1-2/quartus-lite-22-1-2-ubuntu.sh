@@ -494,7 +494,7 @@ options() {
         if (whiptail --title "Quartus Prime Lite Installer" --yesno "                 The installation path already exists.\n                      Do you want to overwrite it?" 8 75) then
             export NEWT_COLORS='root=,red'
             if (whiptail --title "WARNING" --yesno "                             ARE YOU SURE?\n\nTHIS WILL DELETE $INSTALL_PATH AND ITS CONTENTS. THERE IS NO WAY BACK!!!" 10 75) then
-                rm -rf "$INSTALL_PATH"
+                sudo rm -rf "$INSTALL_PATH"
             else
                 options
             fi
@@ -558,6 +558,7 @@ options() {
 }
 
 installation() {
+    :
     sudo dpkg --add-architecture i386 && sudo apt update
 sudo apt install libcanberra-gtk-module libcanberra-gtk3-module libxft2:i386 libxext6:i386 libncurses5:i386 bzip2:i386 -y
 sudo apt-get install g++-multilib -y
@@ -568,13 +569,13 @@ mkdir -p /tmp/quartus-prime-lite-installer-22-1-2/
 wget -O /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar https://downloads.intel.com/akdlm/software/acdsinst/22.1std.2/922/ib_tar/Quartus-lite-22.1std.2.922-linux.tar
 tar -xvf /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar -C /tmp/quartus-prime-lite-installer-22-1-2/
 /tmp/quartus-prime-lite-installer-22-1-2/components/QuartusLiteSetup-22.1std.2.922-linux.run --mode unattended --installdir $INSTALL_PATH --accept_eula true $(build_disabled_components_flag)
-#rm -rf /tmp/quartus-lite-installer-22-1-2/ : DISABLED FOR DEBUGGING
+rm -rf /tmp/quartus-lite-installer-22-1-2/ : DISABLED FOR DEBUGGING
 mkdir -p $HOME/.local/share/applications/
 if [ "$QUARTUS_ENABLE" == "true" ]; then
     if [[ ! $PATH =~ "$INSTALL_PATH/quartus/bin" ]]; then
         echo 'export PATH=$PATH:'$INSTALL_PATH'/quartus/bin' >> ~/.bashrc
     fi
-    echo -e "[Desktop Entry]\nName=Quartus Prime Lite 22.1.2\nType=Application\nTerminal=false\nExec=$INSTALL_PATH/quartus/bin/quartus --64bit\nIcon=$INSTALL_PATH/quartus/adm/quartusii.png\nCategories=Development;Electronics;\nHidden=false\nNoDisplay=false\nStartupNotify=false" | tee $HOME_DIR/.local/share/applications/quartus_prime_lite_22_1_2.desktop
+    echo -e "[Desktop Entry]\nName=Quartus Prime Lite 22.1.2\nType=Application\nTerminal=false\nExec=env LM_LICENSE_FILE='$INSTALL_PATH'/questa_license.dat $INSTALL_PATH/quartus/bin/quartus --64bit\nIcon=$INSTALL_PATH/quartus/adm/quartusii.png\nCategories=Development;Electronics;\nHidden=false\nNoDisplay=false\nStartupNotify=false" | tee $HOME_DIR/.local/share/applications/quartus_prime_lite_22_1_2.desktop
 fi
 
 if [ "$QUESTA_FSE_ENABLE" == "true" ]; then
@@ -582,7 +583,7 @@ if [ "$QUESTA_FSE_ENABLE" == "true" ]; then
         echo 'export PATH=$PATH:'$INSTALL_PATH'/questa_fse/bin' >> ~/.bashrc
     fi
     wget -O $INSTALL_PATH/questa_fse/questa.png https://i.imgur.com/vWeka9a.png
-    echo -e "[Desktop Entry]\nType=Application\nName=Questa FSE 22.1.2\nComment=Questa Simulation Software\nExec=$INSTALL_PATH/questa_fse/bin/vsim -gui -l /dev/null\nIcon=$INSTALL_PATH/questa_fse/questa.png\nTerminal=false\nCategories=Development;Electronics;" | tee $HOME_DIR/.local/share/applications/questa_fse_22_1_2.desktop
+    echo -e "[Desktop Entry]\nType=Application\nName=Questa 22.1.2\nComment=Questa Simulation Software\nExec=env LM_LICENSE_FILE='$INSTALL_PATH'/questa_license.dat  $INSTALL_PATH/questa_fse/bin/vsim -gui -l /dev/null\nIcon=$INSTALL_PATH/questa_fse/questa.png\nTerminal=false\nCategories=Development;Electronics;" | tee $HOME_DIR/.local/share/applications/questa_fse_22_1_2.desktop
 fi
 source ~/.bashrc
 
@@ -590,9 +591,16 @@ source ~/.bashrc
 }
 
 questa_license() {
-    if [ "$QUESTA_FSE_ENABLE" == "true" ]; then
-        whiptail --title "Quartus Prime Lite Installer" --msgbox " Questa needs a free license in order to work. Please, to get one go to: https://licensing.intel.com/psg/ " 9 75
+    export NEWT_COLORS='root=,blue'
+    whiptail --title "Quartus Prime Lite Installer" --msgbox "Questa needs a free to use license in order to work.\n\n                    Please, read the following guide:\n https://miguelovila.com/posts/installing-quartus-prime-22-and-questa/" 10 75
+    LICENSE_PATH=$(whiptail --inputbox "Please enter the license path:" 8 75 "/path/to/license.dat" --title "License Path" 3>&1 1>&2 2>&3)
+    exitstatus=$?
+    if ! [ $exitstatus = 0 ]; then
+        whiptail --title "Quartus Prime Lite Installer" --msgbox "                 Installation aborted by user request." 7 75
+        exit 1
     fi
+    cp "$LICENSE_PATH" "$INSTALL_PATH/questa_license.dat"
+    echo 'export LM_LICENSE_FILE='$INSTALL_PATH'/questa_license.dat' >> ~/.bashrc
 }
 
 final_message() {
@@ -600,9 +608,17 @@ final_message() {
 }
 
 check_script_deps
+
 agreements
+
 options
+
 installation
-questa_license
+
+if [ "$QUESTA_FSE_ENABLE" == "true" ]; then
+    questa_license
+fi
+
 final_message
+
 exit 0
