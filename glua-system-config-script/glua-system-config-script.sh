@@ -77,6 +77,12 @@ install_extra_software() {
     sudo usermod -aG dialout "$(whoami)"
 }
 
+set_windows_as_default() {
+    echo -e "\033[0;33mSetting Windows as the first boot entry\033[0m"
+    sudo mv /etc/grub.d/30_os-prober /etc/grub.d/07_os-prober 
+    sudo grub-mkconfig -o /boot/grub/grub.cfg
+}
+
 # ------------------- End of config functions -------------------
 
 # ------------------- Main -------------------
@@ -101,6 +107,12 @@ config_option=$(zenity --list \
     "Install NVIDIA drivers" \
     --width=500 --height=400)
 
+zenity --question \
+    --title="Grub boot order" \
+    --text="Would you like to set Windows as the first boot entry?"
+
+change_boot_order=$?
+
 # Check if the user selected an option
 if [ -z "$config_option" ]; then
     echo -e "\033[0;31mNo option selected. Exiting...\033[0m"
@@ -122,6 +134,10 @@ install_extra_software
 
 if [ "$config_option" = "Full install with NVIDIA drivers" ]; then
     install_nvidia_drivers
+fi
+
+if [ "$change_boot_order" = "0" ]; then
+    set_windows_as_default
 fi
 
 echo -e "\033[0;33mInstallation done. Good Luck this Semester\033[0m"
