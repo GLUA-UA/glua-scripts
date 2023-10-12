@@ -105,13 +105,8 @@ config_option=$(zenity --list \
     "Full install" \
     "Full install with NVIDIA drivers" \
     "Install NVIDIA drivers" \
+    "Set windows as first boot option" \
     --width=500 --height=400)
-
-zenity --question \
-    --title="Grub boot order" \
-    --text="Would you like to set Windows as the first boot entry?"
-
-change_boot_order=$?
 
 # Check if the user selected an option
 if [ -z "$config_option" ]; then
@@ -121,12 +116,26 @@ fi
 
 echo -e "\033[0;33mSelected option: $config_option\033[0m"
 
+# change_boot_order="1"
+
 if [ "$config_option" = "Install NVIDIA drivers" ]; then
     sudo apt update -y
     install_nvidia_drivers
     echo -e "\033[0;33mDrivers installed.\033[0m"
     exit
 fi
+
+# Ask question before taking actions for better usability
+# This will only run if the option to install nvidia drivers alone was not selected, all the following options should ask the question
+zenity --question \
+    --title="Grub boot order" \
+    --text="Would you like to set Windows as the first boot entry?"
+change_boot_order=$?
+if [ "$config_option" = "Set windows as first boot option" ] && [ "$change_boot_order" = "0" ]; then
+    set_windows_as_default
+    exit
+fi
+
 
 config_mirrors
 system_update
