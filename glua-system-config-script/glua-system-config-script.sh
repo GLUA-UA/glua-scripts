@@ -127,13 +127,14 @@ fi
 
 # Ask question before taking actions for better usability
 # This will only run if the option to install nvidia drivers alone was not selected, all the following options should ask the question
-zenity --question \
-    --title="Grub boot order" \
-    --text="Would you like to set Windows as the first boot entry?"
-change_boot_order=$?
-if [ "$config_option" = "Set windows as first boot option" ] && [ "$change_boot_order" = "0" ]; then
+if [ "$config_option" = "Set windows as first boot option" ]; then
     set_windows_as_default
     exit
+else
+    zenity --question \
+        --title="Grub boot order" \
+        --text="Would you like to set Windows as the first boot entry?"
+    change_boot_order=$?
 fi
 
 
