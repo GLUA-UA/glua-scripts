@@ -14,18 +14,14 @@ wget https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/glua-system-con
 sudo bash glua-system-config-script.sh
 ```
 
-When running, you will be prompted to select a configuration option:
-
-![Prompt Example](https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/glua-system-config-script/assets/config-option-example.png)
-
-You can select the option that best suits you:
+When running, you will be prompted to select a configuration option, select the one best suited for you:
 
 1. **Full install**
 	- Add [GLUA mirrors](https://glua.ua.pt/pub/) to the mirror list, update the system and install some useful tools;
-2. **Full install with NVIDIA drivers**
-	- Same as `Full install` but will also install needed drivers by newer NVIDIA graphic cards;
-3. **Install NVIDIA drivers**
+2. **Install NVIDIA drivers**
 	- Install needed drivers by newer NVIDIA graphic cards.
+3. **Set windows as first boot option**
+	- Makes Windows appear on top of Ubuntu in grub boot menu
 
 ### Packages installed during `Full install`
 - curl
