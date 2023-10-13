@@ -1,5 +1,20 @@
 #!/usr/bin/bash
 
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit ; pwd -P )
+cd "$parent_path" || exit
+
+# Check if the user is running Ubuntu
+if [[ $(cat /etc/os-release) != *"ID=ubuntu"* ]]; then
+    echo -e "\033[0;31mYou can only run this script in Ubuntu\033[0m"
+    exit
+fi
+
+# Check if the user is root
+if [ "$EUID" -ne 0 ]; then
+    echo -e "\033[0;31mPlease run the script as root\033[0m"
+    exit
+fi
+
 echo -e "\033[0;33mWelcome To GLUA's system configuration script"
 echo -e "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
@@ -41,23 +56,13 @@ MMMMMMMMMMMMMMMNNmmmddddhhhhhhddmNNMmy///////////oMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNy/////dMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMdsosMMMMMMMMMMMMMMM\033[0m"
 
-if [[ $(cat /etc/os-release) != *"ID=ubuntu"* ]]; then
-    echo -e "\033[0;31mYou can only run this script in Ubuntu\033[0m"
-    exit
-fi
-
 # ------------------- Config functions -------------------
-
-install_nvidia_drivers() {
-    echo -e "\033[0;33mInstalling NVIDIA drivers\033[0m"
-    sudo apt install -y nvidia-driver-535 nvidia-dkms-535
-}
 
 config_mirrors() {
     echo -e "\033[0;33mConfiguring mirrors\033[0m"
-    wget http://glua.ua.pt/lip/glua_mirrors_ubuntu.sh
-    sudo chmod u+x glua_mirrors_ubuntu.sh
-    sudo ./glua_mirrors_ubuntu.sh
+    wget http://glua.ua.pt/lip/glua_mirrors_ubuntu.sh -P /tmp
+    sudo chmod u+x /tmp/glua_mirrors_ubuntu.sh
+    sudo /tmp/glua_mirrors_ubuntu.sh
 }
 
 system_update() {
@@ -77,6 +82,11 @@ install_extra_software() {
     sudo usermod -aG dialout "$(whoami)"
 }
 
+install_nvidia_drivers() {
+    echo -e "\033[0;33mInstalling NVIDIA drivers\033[0m"
+    sudo apt install -y nvidia-driver-535 nvidia-dkms-535
+}
+
 set_windows_as_default() {
     echo -e "\033[0;33mSetting Windows as the first boot entry\033[0m"
     sudo mv /etc/grub.d/30_os-prober /etc/grub.d/07_os-prober 
@@ -86,11 +96,6 @@ set_windows_as_default() {
 # ------------------- End of config functions -------------------
 
 # ------------------- Main -------------------
-# Check if the user is root
-if [ "$EUID" -ne 0 ]; then
-    echo -e "\033[0;31mPlease run the script as root\033[0m"
-    exit
-fi
 
 # Check if zenity is installed and install it if not
 if ! [ -x "$(command -v zenity)" ]; then
@@ -103,9 +108,8 @@ config_option=$(zenity --list \
     --title="GLUA's system configuration script" \
     --column="Selected the config option" \
     "Full install" \
-    "Full install with NVIDIA drivers" \
     "Install NVIDIA drivers" \
-    "Set windows as first boot option" \
+    "Set Windows as first boot option" \
     --width=500 --height=400)
 
 # Check if the user selected an option
@@ -116,8 +120,6 @@ fi
 
 echo -e "\033[0;33mSelected option: $config_option\033[0m"
 
-change_boot_order="1"
-
 if [ "$config_option" = "Install NVIDIA drivers" ]; then
     sudo apt update -y
     install_nvidia_drivers
@@ -125,22 +127,29 @@ if [ "$config_option" = "Install NVIDIA drivers" ]; then
     exit
 fi
 
-if [ "$config_option" = "Set windows as first boot option" ]; then    set_windows_as_default
+if [ "$config_option" = "Set windows as first boot option" ]; then
+    set_windows_as_default
+    echo -e "\033[0;33mWindows is now set as the first boot entry.\033[0m"
     exit
-else
-    # Ask question before taking actions for better usability
-    # This will only run if the option to install nvidia drivers alone was not selected, all the following options should ask the question
-    zenity --question \
-        --title="Grub boot order" \
-        --text="Would you like to set Windows as the first boot entry?"
-    change_boot_order=$?
 fi
+
+zenity --question \
+    --title="NVIDIA drivers" \
+    --text="Would you like to install NVIDIA drivers?"
+install_nvidia_drivers=$?
+
+# Ask question before taking actions for better usability
+# This will only run if the option to install nvidia drivers alone was not selected, all the following options should ask the question
+zenity --question \
+    --title="Grub boot order" \
+    --text="Would you like to set Windows as the first boot entry?"
+change_boot_order=$?
 
 config_mirrors
 system_update
 install_extra_software
 
-if [ "$config_option" = "Full install with NVIDIA drivers" ]; then
+if [ "$install_nvidia_drivers" = "0" ]; then
     install_nvidia_drivers
 fi
 
