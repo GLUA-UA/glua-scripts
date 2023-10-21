@@ -1,4 +1,10 @@
-#!/usr/bin/bash
+#!/bin/bash
+
+# Exit if ran using sh
+if [ ! "$BASH_VERSION" ] ; then
+    printf "\033[0;31mPlease run the script using 'bash' instead of 'sh'\033[0m\n"
+    exit
+fi
 
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit ; pwd -P )
 cd "$parent_path" || exit
