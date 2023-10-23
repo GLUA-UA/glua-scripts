@@ -114,6 +114,7 @@ config_option=$(zenity --list \
     --title="GLUA's system configuration script" \
     --column="Selected the config option" \
     "Full install" \
+    "Setup mirrors and update system" \
     "Install NVIDIA drivers" \
     "Set Windows as first boot option" \
     --width=500 --height=400)
@@ -125,6 +126,13 @@ if [ -z "$config_option" ]; then
 fi
 
 echo -e "\033[0;33mSelected option: $config_option\033[0m"
+
+if [ "$config_option" = "Setup mirrors and update system" ]; then
+    config_mirrors
+    system_update
+    echo -e "\033[0;33mSystem updated with GLUA mirrors"
+    exit
+fi
 
 if [ "$config_option" = "Install NVIDIA drivers" ]; then
     sudo apt update -y
