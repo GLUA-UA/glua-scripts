@@ -21,21 +21,6 @@ if [ "$EUID" -ne 0 ]; then
     exit
 fi
 
-parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit ; pwd -P )
-cd "$parent_path" || exit
-
-# Check if the user is running Ubuntu
-if [[ $(cat /etc/os-release) != *"ID=ubuntu"* ]]; then
-    echo -e "\033[0;31mYou can only run this script in Ubuntu\033[0m"
-    exit
-fi
-
-# Check if the user is root
-if [ "$EUID" -ne 0 ]; then
-    echo -e "\033[0;31mPlease run the script as root\033[0m"
-    exit
-fi
-
 echo -e "\033[0;33mWelcome To GLUA's system configuration script"
 echo -e "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
@@ -95,8 +80,8 @@ system_update() {
 }
 
 install_extra_software() {
-    echo -e "\033[0;33mInstalling needed software\033[0m"
-    sudo apt install -y curl vim build-essential git gitk default-jdk geany wireshark ubuntu-restricted-extras
+    echo -e "\033[0;33mInstalling extra software\033[0m"
+    sudo apt install -y curl vim build-essential git gitg default-jdk wireshark ubuntu-restricted-extras
 
     echo -e "\033[0;33mFixing groups\033[0m"
     sudo usermod -aG wireshark "$(whoami)"
@@ -129,6 +114,7 @@ config_option=$(zenity --list \
     --title="GLUA's system configuration script" \
     --column="Selected the config option" \
     "Full install" \
+    "Setup mirrors and update system" \
     "Install NVIDIA drivers" \
     "Set Windows as first boot option" \
     --width=500 --height=400)
@@ -140,6 +126,13 @@ if [ -z "$config_option" ]; then
 fi
 
 echo -e "\033[0;33mSelected option: $config_option\033[0m"
+
+if [ "$config_option" = "Setup mirrors and update system" ]; then
+    config_mirrors
+    system_update
+    echo -e "\033[0;33mSystem updated with GLUA mirrors"
+    exit
+fi
 
 if [ "$config_option" = "Install NVIDIA drivers" ]; then
     sudo apt update -y
