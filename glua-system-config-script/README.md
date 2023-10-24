@@ -10,7 +10,8 @@ Script used to configure the system post-installation.
 You can run the script by running:
 
 ```console
-wget -qO- https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/glua-system-config-script/glua-system-config-script.sh | sudo bash 
+wget https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/glua-system-config-script/glua-system-config-script.sh
+sudo bash glua-system-config-script.sh
 ```
 
 When running, you will be prompted to select a configuration option, select the one best suited for you:
