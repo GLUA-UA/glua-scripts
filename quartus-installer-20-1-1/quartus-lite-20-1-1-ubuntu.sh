@@ -1,5 +1,14 @@
 #!/bin/bash
 
+read -ra space_info_arr <<< "$(df /home | grep "/")"
+free_space="${space_info_arr[3]}"
+
+if [ "$free_space" -lt "29296880" ]; then
+    echo "There not enough space in the partition you have /home mounted on."
+    echo "You should have at least 30GB of free space in that partition."
+    exit 1
+fi
+
 #
 # DEFAULT VALUES FOR NON-INTERACTIVE INSTALL
 #
