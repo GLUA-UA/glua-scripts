@@ -79,6 +79,30 @@ system_update() {
     sudo apt upgrade -y
 }
 
+config_vpn() {
+
+    echo -e "\033[0;33mStarting vpn configuration\033[0m"
+    sudo dpkg --add-architecture i386
+    sudo apt update -y
+
+    echo -e "\033[0;33mInstaling snx dependencies\033[0m"
+    sudo apt install -y curl libpam0g:i386 libx11-6:i386 libstdc++6:i386 libstdc++5:i386 libnss3-tools
+
+    echo -e "\033[0;33mDownloading and running snx install script\033[0m"
+    wget https://www.ua.pt/file/60626 && unzip -q 60626
+    chmod +x snx_install_linux30.sh
+    ./snx_install_linux30.sh
+
+    echo -e "\033[0;33mRemoving files\033[0m"
+    rm 60626 snx_install_linux30.sh
+    echo -e "\033[0;33mYour university email:\033[0m"
+    read -p "Email: " email
+
+    printf "server go.ua.pt\nusername %s\nreauth yes\n" "$email" > "$HOME/.snxrc"
+    printf "\n\nSempre que quiseres ligar-te ao vpn da universidade abre uma janela do terminal e corre `snx`\n\n"
+
+}
+
 install_extra_software() {
     echo -e "\033[0;33mInstalling extra software\033[0m"
     sudo apt install -y curl vim build-essential git gitg default-jdk ubuntu-restricted-extras
@@ -116,6 +140,7 @@ config_option=$(zenity --list \
     "Setup mirrors and update system" \
     "Install NVIDIA drivers" \
     "Set Windows as first boot option" \
+    "Set up university vpn" \
     --width=500 --height=400)
 
 # Check if the user selected an option
@@ -143,6 +168,12 @@ fi
 if [ "$config_option" = "Set windows as first boot option" ]; then
     set_windows_as_default
     echo -e "\033[0;33mWindows is now set as the first boot entry.\033[0m"
+    exit
+fi
+
+if [ "$config_option" = "Set up university vpn" ]; then
+    config_vpn
+    echo -e "\033[0;33mVpn is now configures run snx to start a session.\033[0m"
     exit
 fi
 
