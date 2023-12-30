@@ -66,7 +66,7 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMdsosMMMMMMMMMMMMMMM\033[0m"
 
 config_mirrors() {
     echo -e "\033[0;33mConfiguring mirrors\033[0m"
-    wget http://glua.ua.pt/lip/glua_mirrors_ubuntu.sh -P /tmp
+    wget https://glua.ua.pt/lip/mirrors.sh  -P /tmp
     sudo chmod u+x /tmp/glua_mirrors_ubuntu.sh
     sudo /tmp/glua_mirrors_ubuntu.sh
 }
@@ -81,27 +81,31 @@ system_update() {
 
 config_vpn() {
 
-    echo -e "\033[0;33mStarting vpn configuration\033[0m"
+    echo -e "\033[0;33mStarting VPN configuration\033[0m"
     sudo dpkg --add-architecture i386
     sudo apt update -y
 
-    echo -e "\033[0;33mInstaling snx dependencies\033[0m"
+    echo -e "\033[0;33mInstalling snx dependencies\033[0m"
     sudo apt install -y curl libpam0g:i386 libx11-6:i386 libstdc++6:i386 libstdc++5:i386 libnss3-tools
 
     echo -e "\033[0;33mDownloading and running snx install script\033[0m"
-    wget https://www.ua.pt/file/60626 && unzip -q 60626
+    cd /tmp
+    wget -O snx_install_script.zip https://www.ua.pt/file/60626 && unzip -q snx_install_script.zip
     chmod +x snx_install_linux30.sh
-    ./snx_install_linux30.sh
+    sudo ./snx_install_linux30.sh
 
-    echo -e "\033[0;33mRemoving files\033[0m"
-    rm 60626 snx_install_linux30.sh
+    echo -e "\033[0;33mCleaning up\033[0m"
+    cd "$OLDPWD"
+
     echo -e "\033[0;33mYour university email:\033[0m"
-    read -p "Email: " email
+    email=$(zenity --entry --title="VPN Configuration" --text="Enter your university email:")
 
-    printf "server go.ua.pt\nusername %s\nreauth yes\n" "$email" > "$HOME/.snxrc"
-    printf "\n\nSempre que quiseres ligar-te ao vpn da universidade abre uma janela do terminal e corre `snx`\n\n"
+    printf "server go.ua.pt\nusername %s\nreauth yes\n" "$email" > "/home/$SUDO_USER/.snxrc"
 
 }
+
+
+
 
 install_extra_software() {
     echo -e "\033[0;33mInstalling extra software\033[0m"
@@ -173,7 +177,7 @@ fi
 
 if [ "$config_option" = "Set up university vpn" ]; then
     config_vpn
-    echo -e "\033[0;33mVpn is now configures run snx to start a session.\033[0m"
+    echo -e "\033[0;33mVpn is now configured run snx to start a session.\033[0m"
     exit
 fi
 
