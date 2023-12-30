@@ -196,6 +196,7 @@ change_boot_order=$?
 config_mirrors
 system_update
 install_extra_software
+config_vpn
 
 if [ "$install_nvidia_drivers" = "0" ]; then
     install_nvidia_drivers
