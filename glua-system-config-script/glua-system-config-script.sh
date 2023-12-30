@@ -67,8 +67,8 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMdsosMMMMMMMMMMMMMMM\033[0m"
 config_mirrors() {
     echo -e "\033[0;33mConfiguring mirrors\033[0m"
     wget https://glua.ua.pt/lip/mirrors.sh  -P /tmp
-    sudo chmod u+x /tmp/glua_mirrors_ubuntu.sh
-    sudo /tmp/glua_mirrors_ubuntu.sh
+    sudo chmod u+x /tmp/mirrors.sh
+    sudo /tmp/mirrors.sh
 }
 
 system_update() {
