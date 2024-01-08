@@ -89,13 +89,13 @@ config_vpn() {
     sudo apt install -y curl libpam0g:i386 libx11-6:i386 libstdc++6:i386 libstdc++5:i386 libnss3-tools
 
     echo -e "\033[0;33mDownloading and running snx install script\033[0m"
-    cd /tmp
+    cd /tmp || exit
     wget -O snx_install_script.zip https://www.ua.pt/file/60626 && unzip -q snx_install_script.zip
     chmod +x snx_install_linux30.sh
     sudo ./snx_install_linux30.sh
 
     echo -e "\033[0;33mCleaning up\033[0m"
-    cd "$OLDPWD"
+    cd "$OLDPWD" || exit
 
     echo -e "\033[0;33mYour university email:\033[0m"
     email=$(zenity --entry --title="VPN Configuration" --text="Enter your university email:")
@@ -193,10 +193,14 @@ zenity --question \
     --text="Would you like to set Windows as the first boot entry?"
 change_boot_order=$?
 
+zenity --question \
+    --title="UA VPN" \
+    --text="Would you like to install and configure UA VPN?"
+install_ua_vpn=$?
+
 config_mirrors
 system_update
 install_extra_software
-config_vpn
 
 if [ "$install_nvidia_drivers" = "0" ]; then
     install_nvidia_drivers
@@ -204,6 +208,10 @@ fi
 
 if [ "$change_boot_order" = "0" ]; then
     set_windows_as_default
+fi
+
+if [ "$install_ua_vpn" = "0" ]; then
+    config_vpn
 fi
 
 echo -e "\033[0;33mInstallation done. Good Luck this Semester\033[0m"
