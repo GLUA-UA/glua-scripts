@@ -178,7 +178,10 @@ fi
 
 if [ "$config_option" = "Set up university vpn" ]; then
     echo -e "\033[0;33mYour university email:\033[0m"
-    ua_vpn_email=$(zenity --entry --title="VPN Configuration" --text="Enter your university email:")
+    ua_vpn_email=$(zenity --entry \
+        --title="VPN Configuration" \
+        --text="Enter your university email:" \
+        --width=500)
     config_vpn "$ua_vpn_email"
     echo -e "\033[0;33mVpn is now configured run snx to start a session.\033[0m"
     exit
@@ -196,7 +199,8 @@ change_boot_order=$?
 
 ua_vpn_email=$(zenity --entry \
     --title="VPN Configuration" \
-    --text="Enter your university email or leave\nblank to skip VPN configuration:")
+    --text="Enter your university email or leave blank to skip VPN configuration:" \
+    --width=500)
 
 config_mirrors
 system_update
