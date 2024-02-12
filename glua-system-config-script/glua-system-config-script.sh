@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ------------------- Description -------------------
+
 # Exit if ran using sh
 if [ ! "$BASH_VERSION" ] ; then
     printf "\033[0;31mPlease run the script using 'bash' instead of 'sh'\033[0m\n"
@@ -62,15 +64,18 @@ MMMMMMMMMMMMMMMNNmmmddddhhhhhhddmNNMmy///////////oMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNy/////dMMMMMMMMMMMMMM
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMdsosMMMMMMMMMMMMMMM\033[0m"
 
+# ------------------- End of Description -------------------
+
 # ------------------- Config functions -------------------
 
+# Configures GLUA's mirrors
 config_mirrors() {
     echo -e "\033[0;33mConfiguring mirrors\033[0m"
-    wget https://glua.ua.pt/lip/mirrors.sh  -P /tmp
-    sudo chmod u+x /tmp/mirrors.sh
-    sudo /tmp/mirrors.sh
+    wget https://glua.ua.pt/lip/mirrors.sh -P /tmp
+    sudo bash /tmp/mirrors.sh
 }
 
+# Updates the system
 system_update() {
     echo -e "\033[0;33mChecking for system updates\033[0m"
     sudo apt update -y
@@ -79,8 +84,8 @@ system_update() {
     sudo apt upgrade -y
 }
 
+# Configures the university's VPN
 config_vpn() {
-
     echo -e "\033[0;33mStarting VPN configuration\033[0m"
     sudo dpkg --add-architecture i386
     sudo apt update -y
@@ -91,22 +96,15 @@ config_vpn() {
     echo -e "\033[0;33mDownloading and running snx install script\033[0m"
     cd /tmp || exit
     wget -O snx_install_script.zip https://www.ua.pt/file/60626 && unzip -q snx_install_script.zip
-    chmod +x snx_install_linux30.sh
-    sudo ./snx_install_linux30.sh
+    sudo bash snx_install_linux30.sh
 
     echo -e "\033[0;33mCleaning up\033[0m"
     cd "$OLDPWD" || exit
 
-    echo -e "\033[0;33mYour university email:\033[0m"
-    email=$(zenity --entry --title="VPN Configuration" --text="Enter your university email:")
-
-    printf "server go.ua.pt\nusername %s\nreauth yes\n" "$email" > "/home/$SUDO_USER/.snxrc"
-
+    printf "server go.ua.pt\nusername %s\nreauth yes\n" "$1" > "/home/$SUDO_USER/.snxrc"
 }
 
-
-
-
+# Installs extra software
 install_extra_software() {
     echo -e "\033[0;33mInstalling extra software\033[0m"
     sudo apt install -y curl vim build-essential git gitg default-jdk ubuntu-restricted-extras
@@ -115,11 +113,13 @@ install_extra_software() {
     sudo usermod -aG dialout "$(whoami)"
 }
 
+# Installs NVIDIA drivers for newer GPUs
 install_nvidia_drivers() {
     echo -e "\033[0;33mInstalling NVIDIA drivers\033[0m"
     sudo apt install -y nvidia-driver-535 nvidia-dkms-535
 }
 
+# Sets Windows as the first boot entry in grub
 set_windows_as_default() {
     echo -e "\033[0;33mSetting Windows as the first boot entry\033[0m"
     sudo mv /etc/grub.d/30_os-prober /etc/grub.d/07_os-prober 
@@ -133,6 +133,7 @@ set_windows_as_default() {
 # Check if zenity is installed and install it if not
 if ! [ -x "$(command -v zenity)" ]; then
     echo -e "\033[0;33mInstalling zenity\033[0m"
+    sudo apt update -y
     sudo apt install -y zenity
 fi
 
@@ -176,7 +177,12 @@ if [ "$config_option" = "Set windows as first boot option" ]; then
 fi
 
 if [ "$config_option" = "Set up university vpn" ]; then
-    config_vpn
+    echo -e "\033[0;33mYour university email:\033[0m"
+    ua_vpn_email=$(zenity --entry \
+        --title="VPN Configuration" \
+        --text="Enter your university email:" \
+        --width=500)
+    config_vpn "$ua_vpn_email"
     echo -e "\033[0;33mVpn is now configured run snx to start a session.\033[0m"
     exit
 fi
@@ -186,17 +192,15 @@ zenity --question \
     --text="Would you like to install NVIDIA drivers?"
 install_nvidia_drivers=$?
 
-# Ask question before taking actions for better usability
-# This will only run if the option to install nvidia drivers alone was not selected, all the following options should ask the question
 zenity --question \
     --title="Grub boot order" \
     --text="Would you like to set Windows as the first boot entry?"
 change_boot_order=$?
 
-zenity --question \
-    --title="UA VPN" \
-    --text="Would you like to install and configure UA VPN?"
-install_ua_vpn=$?
+ua_vpn_email=$(zenity --entry \
+    --title="VPN Configuration" \
+    --text="Enter your university email or leave blank to skip VPN configuration:" \
+    --width=500)
 
 config_mirrors
 system_update
@@ -210,9 +214,11 @@ if [ "$change_boot_order" = "0" ]; then
     set_windows_as_default
 fi
 
-if [ "$install_ua_vpn" = "0" ]; then
-    config_vpn
+# Check if the user entered an email for the vpn
+# If so, configure the vpn
+if [ -n "$ua_vpn_email" ]; then
+    config_vpn "$ua_vpn_email"
 fi
 
-echo -e "\033[0;33mInstallation done. Good Luck this Semester\033[0m"
+echo -e "\033[0;33mInstallation done.\033[0m"
 # ------------------- End of Main -------------------

@@ -10,26 +10,34 @@ Script used to configure the system post-installation.
 You can run the script by running:
 
 ```console
-wget https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/glua-system-config-script/glua-system-config-script.sh
-sudo bash glua-system-config-script.sh
+wget https://glua.ua.pt/lip/install.sh
+sudo bash install.sh
 ```
 
 When running, you will be prompted to select a configuration option, select the one best suited for you:
 
 1. **Full install**
-	- Add [GLUA mirrors](https://glua.ua.pt/pub/) to the mirror list, update the system and install some useful tools;
-2. **Install NVIDIA drivers**
+    - Runs the full setup:
+        + Adds [GLUA mirrors](https://glua.ua.pt/pub/) to the mirror list;
+        + Updates the system;
+        + Installs some extra software;
+        + Installs extra drivers (Optional);
+        + Sets Windows as first boot option (Optional);
+        + Sets up UA VPN (Optional).
+2. **Setup mirrors and system update**
+    - Adds [GLUA mirrors](https://glua.ua.pt/pub/) to the mirror list and updates the system.
+3. **Install NVIDIA drivers**
 	- Install needed drivers by newer NVIDIA graphic cards.
-3. **Set windows as first boot option**
-	- Makes Windows appear on top of Ubuntu in grub boot menu
+4. **Set windows as first boot option**
+	- Makes Windows appear on top of Ubuntu in grub boot menu.
+5. **Set up university vpn**
+    - Sets up university's checkpoint VPN (`snx`).
 
 ### Packages installed during `Full install`
 - curl
 - vim
 - build-essential
 - git
-- gitk
+- gitg
 - default-jdk
-- geany
-- wireshark
 - ubuntu-restricted-extras
