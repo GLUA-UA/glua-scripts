@@ -39,5 +39,5 @@ When running, you will be prompted to select a configuration option, select the 
 - build-essential
 - git
 - gitg
-- default-jdk
+- openjdk-17-jdk
 - ubuntu-restricted-extras
