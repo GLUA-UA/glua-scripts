@@ -107,7 +107,7 @@ config_vpn() {
 # Installs extra software
 install_extra_software() {
     echo -e "\033[0;33mInstalling extra software\033[0m"
-    sudo apt install -y curl vim build-essential git gitg default-jdk ubuntu-restricted-extras
+    sudo apt install -y curl vim build-essential git gitg openjdk-17-jdk ubuntu-restricted-extras
 
     echo -e "\033[0;33mFixing groups\033[0m"
     sudo usermod -aG dialout "$(whoami)"
