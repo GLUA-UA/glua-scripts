@@ -5,7 +5,13 @@ sudo mkdir -p /etc/udev/rules.d
 echo -e 'SUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6001", MODE="0666"\nSUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6002", MODE="0666"\nSUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6003", MODE="0666"\nSUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6010", MODE="0666"\nSUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6810", MODE="0666"' | sudo tee /etc/udev/rules.d/51-usbblaster.rules
 sudo udevadm control --reload
 mkdir -p /tmp/quartus-prime-lite-installer-22-1-2/
-wget -O /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar https://downloads.intel.com/akdlm/software/acdsinst/22.1std.2/922/ib_tar/Quartus-lite-22.1std.2.922-linux.tar
+
+if test -f "/tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar"; then
+    echo "$FILE exists. Using provided installer"
+else
+    wget -O /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar https://downloads.intel.com/akdlm/software/acdsinst/22.1std.2/922/ib_tar/Quartus-lite-22.1std.2.922-linux.tar
+fi
+
 tar -xvf /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar -C /tmp/quartus-prime-lite-installer-22-1-2/
 /tmp/quartus-prime-lite-installer-22-1-2/components/QuartusLiteSetup-22.1std.2.922-linux.run --mode unattended --installdir $INSTALL_PATH --accept_eula true $(build_disabled_components_flag)
 rm -rf /tmp/quartus-lite-installer-22-1-2/ : DISABLED FOR DEBUGGING

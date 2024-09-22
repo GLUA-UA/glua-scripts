@@ -46,6 +46,22 @@ check_script_deps() {
     echo " Dependencies OK"
 }
 
+offline_installer() {
+    if [ -z "$1" ]; then
+        echo "Proceeding with online installation."
+    else
+        if test -f "$1"; then
+            echo "Copying the installer. Wait..."
+            mkdir -p /tmp/quartus-prime-lite-installer-22-1-2/
+            cp $1 /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar
+            echo "File copied! Proceeding with offline installation."
+        else
+            echo "$1 does not exist. Exiting."
+            exit
+        fi
+    fi
+}
+
 build_disabled_components_flag() {
     DISABLED_COMPONENTS_FLAG=""
     [ $QUARTUS_ENABLE == false ] && DISABLED_COMPONENTS_FLAG="${DISABLED_COMPONENTS_FLAG}quartus,"
@@ -580,6 +596,8 @@ final_message() {
 }
 
 check_script_deps
+
+offline_installer $1
 
 agreements
 

@@ -1,14 +1,5 @@
 #!/bin/bash
 
-read -ra space_info_arr <<< "$(df /home | grep "/")"
-free_space="${space_info_arr[3]}"
-
-if [ "$free_space" -lt "29296880" ]; then
-    echo "There not enough space in the partition you have /home mounted on."
-    echo "You should have at least 30GB of free space in that partition."
-    exit 1
-fi
-
 #
 # DEFAULT VALUES FOR NON-INTERACTIVE INSTALL
 #
@@ -53,6 +44,22 @@ check_script_deps() {
         exit 1
     fi
     echo " Dependencies OK"
+}
+
+offline_installer() {
+    if [ -z "$1" ]; then
+        echo "Proceeding with online installation."
+    else
+        if test -f "$1"; then
+            echo "Copying the installer. Wait..."
+            mkdir -p /tmp/quartus-prime-lite-installer-22-1-2/
+            cp $1 /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar
+            echo "File copied! Proceeding with offline installation."
+        else
+            echo "$1 does not exist. Exiting."
+            exit
+        fi
+    fi
 }
 
 build_disabled_components_flag() {
@@ -575,7 +582,13 @@ sudo mkdir -p /etc/udev/rules.d
 echo -e 'SUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6001", MODE="0666"\nSUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6002", MODE="0666"\nSUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6003", MODE="0666"\nSUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6010", MODE="0666"\nSUBSYSTEM=="usb", ATTRS{idVendor}=="09fb", ATTRS{idProduct}=="6810", MODE="0666"' | sudo tee /etc/udev/rules.d/51-usbblaster.rules
 sudo udevadm control --reload
 mkdir -p /tmp/quartus-prime-lite-installer-22-1-2/
-wget -O /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar https://downloads.intel.com/akdlm/software/acdsinst/22.1std.2/922/ib_tar/Quartus-lite-22.1std.2.922-linux.tar
+
+if test -f "/tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar"; then
+    echo "$FILE exists. Using provided installer"
+else
+    wget -O /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar https://downloads.intel.com/akdlm/software/acdsinst/22.1std.2/922/ib_tar/Quartus-lite-22.1std.2.922-linux.tar
+fi
+
 tar -xvf /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar -C /tmp/quartus-prime-lite-installer-22-1-2/
 /tmp/quartus-prime-lite-installer-22-1-2/components/QuartusLiteSetup-22.1std.2.922-linux.run --mode unattended --installdir $INSTALL_PATH --accept_eula true $(build_disabled_components_flag)
 rm -rf /tmp/quartus-lite-installer-22-1-2/ : DISABLED FOR DEBUGGING
@@ -617,6 +630,8 @@ final_message() {
 }
 
 check_script_deps
+
+offline_installer $1
 
 agreements
 
