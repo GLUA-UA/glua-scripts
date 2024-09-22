@@ -11,7 +11,7 @@ This is a script to install Quartus Prime Lite 22.1.2 on various Linux distribut
 - Creates a desktop shortcut for Quartus Prime Lite 22.1.2 and QuestaSim
 - Handles the license file installation for you (you need to provide the license.dat file)
 
-## Installation
+## Online Installation
 
 ### Ubuntu (Works on all versions since 20.04 LTS)
 
@@ -27,8 +27,27 @@ If 'wget' is not installed, you can install it with the following command:
 curl -s https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/quartus-installer-22-1-2/quartus-lite-22-1-2-ubuntu.sh | bash
 ```
 
+## Offline Installation
+
+### Ubuntu (Works on all versions since 20.04 LTS)
+
+Open a terminal and run the following commands:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/quartus-installer-22-1-2/quartus-lite-22-1-2-ubuntu.sh
+quartus-lite-22-1-2-ubuntu.sh /path/to/installer.tar
+```
+
+If 'wget' is not installed, you can install it with the following command:
+
+```bash
+curl -s https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/quartus-installer-22-1-2/quartus-lite-22-1-2-ubuntu.sh
+quartus-lite-22-1-2-ubuntu.sh /path/to/installer.tar
+```
+
 ## Tested/Available Distributions
 
+- Ubuntu 24.04 LTS
 - Ubuntu 23.10
 - Ubuntu 22.04 LTS
 - Ubuntu 20.04 LTS
