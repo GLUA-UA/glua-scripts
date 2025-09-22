@@ -116,13 +116,13 @@ install_extra_software() {
 # Installs NVIDIA drivers for newer GPUs
 install_nvidia_drivers() {
     echo -e "\033[0;33mInstalling NVIDIA drivers\033[0m"
-    sudo apt install -y nvidia-driver-535 nvidia-dkms-535
+    sudo apt install -y nvidia-driver-580-open nvidia-dkms-580-open
 }
 
 # Sets Windows as the first boot entry in grub
 set_windows_as_default() {
     echo -e "\033[0;33mSetting Windows as the first boot entry\033[0m"
-    sudo mv /etc/grub.d/30_os-prober /etc/grub.d/07_os-prober 
+    sudo mv /etc/grub.d/30_os-prober /etc/grub.d/07_os-prober
     sudo grub-mkconfig -o /boot/grub/grub.cfg
 }
 
