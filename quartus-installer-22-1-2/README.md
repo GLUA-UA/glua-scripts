@@ -4,16 +4,18 @@ This is a script to install Quartus Prime Lite 22.1.2 on various Linux distribut
 
 ## What it does
 
-- Downloads the Quartus Prime Lite 22.1.2 installer from Intel's website
+- Downloads the Quartus Prime Lite 22.1.2 installer from Intel's website (or a custom URL)
 - Checks for missing dependencies and installs them on your system
 - Installs Quartus Prime Lite 22.1.2 to the directory of your choice
 - Creates udev rules for USB-Blaster and USB-Blaster II
 - Creates a desktop shortcut for Quartus Prime Lite 22.1.2 and QuestaSim
 - Handles the license file installation for you (you need to provide the license.dat file)
 
-## Online Installation
+## Installation Methods
 
-### Ubuntu (Works on all versions since 20.04 LTS)
+### Online Installation (Default Intel URL)
+
+#### Ubuntu (Works on all versions since 20.04 LTS)
 
 Open a terminal and run the following commands:
 
@@ -27,22 +29,36 @@ If 'wget' is not installed, you can install it with the following command:
 curl -s https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/quartus-installer-22-1-2/quartus-lite-22-1-2-ubuntu.sh | bash
 ```
 
-## Offline Installation
+### Custom URL Installation
 
-### Ubuntu (Works on all versions since 20.04 LTS)
-
-Open a terminal and run the following commands:
+You can specify a custom download URL (e.g., from a local mirror or network server) using the `--url` flag:
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/quartus-installer-22-1-2/quartus-lite-22-1-2-ubuntu.sh
-quartus-lite-22-1-2-ubuntu.sh /path/to/installer.tar
+./quartus-lite-22-1-2-ubuntu.sh --url http://192.168.1.100/installer.tar
 ```
 
-If 'wget' is not installed, you can install it with the following command:
+Or download and run in one command:
 
 ```bash
-curl -s https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/quartus-installer-22-1-2/quartus-lite-22-1-2-ubuntu.sh
-quartus-lite-22-1-2-ubuntu.sh /path/to/installer.tar
+wget https://raw.githubusercontent.com/GLUA-UA/glua-scripts/main/quartus-installer-22-1-2/quartus-lite-22-1-2-ubuntu.sh
+chmod +x quartus-lite-22-1-2-ubuntu.sh
+./quartus-lite-22-1-2-ubuntu.sh --url http://192.168.1.100/installer.tar
+```
+
+### Offline Installation
+
+#### Ubuntu (Works on all versions since 20.04 LTS)
+
+If you already have the installer tar file downloaded, you can use the `--offline` flag:
+
+```bash
+./quartus-lite-22-1-2-ubuntu.sh --offline /path/to/installer.tar
+```
+
+For backward compatibility, you can also use the original syntax:
+
+```bash
+./quartus-lite-22-1-2-ubuntu.sh /path/to/installer.tar
 ```
 
 ## Tested/Available Distributions

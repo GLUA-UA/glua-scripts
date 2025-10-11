@@ -6,6 +6,7 @@
 
 HOME_DIR="/home/$USER"
 INSTALL_PATH="/home/$USER/.intel_fpga_lite/22.1.2"
+DOWNLOAD_URL="https://downloads.intel.com/akdlm/software/acdsinst/22.1std.2/922/ib_tar/Quartus-lite-22.1std.2.922-linux.tar"
 
 QUARTUS_ENABLE=true
 QUARTUS_HELP_ENABLE=true
@@ -59,6 +60,13 @@ offline_installer() {
             echo "$1 does not exist. Exiting."
             exit
         fi
+    fi
+}
+
+custom_url_installer() {
+    if [ ! -z "$1" ]; then
+        DOWNLOAD_URL="$1"
+        echo "Using custom download URL: $DOWNLOAD_URL"
     fi
 }
 
@@ -586,7 +594,8 @@ mkdir -p /tmp/quartus-prime-lite-installer-22-1-2/
 if test -f "/tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar"; then
     echo "$FILE exists. Using provided installer"
 else
-    wget -O /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar https://downloads.intel.com/akdlm/software/acdsinst/22.1std.2/922/ib_tar/Quartus-lite-22.1std.2.922-linux.tar
+    echo "Downloading installer from: $DOWNLOAD_URL"
+    wget -O /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar "$DOWNLOAD_URL"
 fi
 
 tar -xvf /tmp/quartus-prime-lite-installer-22-1-2/quartus-lite.tar -C /tmp/quartus-prime-lite-installer-22-1-2/
@@ -631,7 +640,25 @@ final_message() {
 
 check_script_deps
 
-offline_installer $1
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --url)
+            custom_url_installer "$2"
+            shift 2
+            ;;
+        --offline)
+            offline_installer "$2"
+            shift 2
+            ;;
+        *)
+            if [ -z "$LEGACY_ARG_PARSED" ]; then
+                offline_installer "$1"
+                LEGACY_ARG_PARSED=true
+            fi
+            shift
+            ;;
+    esac
+done
 
 agreements
 
