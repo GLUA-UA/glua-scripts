@@ -27,7 +27,7 @@ if [ "$QUESTA_FSE_ENABLE" == "true" ]; then
     if [[ ! $PATH =~ "$INSTALL_PATH/questa_fse/bin" ]]; then
         echo 'export PATH=$PATH:'$INSTALL_PATH'/questa_fse/bin' >> ~/.bashrc
     fi
-    wget -O $INSTALL_PATH/questa_fse/questa.png https://i.imgur.com/vWeka9a.png
+    wget -U GLUA_Quartus_Installer/22.1.2 -O $INSTALL_PATH/questa_fse/questa.png https://i.imgur.com/vWeka9a.png
     echo -e "[Desktop Entry]\nType=Application\nName=Questa 22.1.2\nComment=Questa Simulation Software\nExec=env LM_LICENSE_FILE='$INSTALL_PATH'/questa_license.dat  $INSTALL_PATH/questa_fse/bin/vsim -gui -l /dev/null\nIcon=$INSTALL_PATH/questa_fse/questa.png\nTerminal=false\nCategories=Development;Electronics;" | tee $HOME_DIR/.local/share/applications/questa_fse_22_1_2.desktop
 fi
 source ~/.bashrc
