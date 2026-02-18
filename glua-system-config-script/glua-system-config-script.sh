@@ -91,7 +91,7 @@ config_vpn() {
     sudo apt update -y
 
     echo -e "\033[0;33mInstalling snx dependencies\033[0m"
-    sudo apt install -y curl libpam0g:i386 libx11-6:i386 libstdc++6:i386 libstdc++5:i386 libnss3-tools
+    sudo apt install -y curl libpam0g:i386 libx11-6:i386 libstdc++6:i386 libstdc++5:i386 libnss3-tools bzip2
 
     echo -e "\033[0;33mDownloading and running snx install script\033[0m"
     cd /tmp || exit
