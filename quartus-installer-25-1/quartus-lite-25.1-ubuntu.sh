@@ -529,7 +529,7 @@ mkdir -p $HOME/.local/share/applications/
 if [[ ! $PATH =~ "$INSTALL_PATH/quartus/bin" ]]; then
     echo 'export PATH=$PATH:'$INSTALL_PATH'/quartus/bin' >> ~/.bashrc
 fi
-echo -e "[Desktop Entry]\nName=Quartus Prime Lite 25.1\nType=Application\nTerminal=false\nExec=env LM_LICENSE_FILE='$INSTALL_PATH'/questa_license.dat $INSTALL_PATH/quartus/bin/quartus --64bit\nIcon=$INSTALL_PATH/quartus/adm/quartusii.png\nCategories=Development;Electronics;\nHidden=false\nNoDisplay=false\nStartupNotify=false" | tee $HOME_DIR/.local/share/applications/quartus_prime_lite_25_1.desktop
+echo -e "[Desktop Entry]\nName=Quartus Prime Lite 25.1\nType=Application\nTerminal=false\nExec=env SALT_LICENSE_SERVER='$INSTALL_PATH'/questa_license.dat LM_LICENSE_FILE='$INSTALL_PATH'/questa_license.dat $INSTALL_PATH/quartus/bin/quartus --64bit\nIcon=$INSTALL_PATH/quartus/adm/quartusii.png\nCategories=Development;Electronics;\nHidden=false\nNoDisplay=false\nStartupNotify=false" | tee $HOME_DIR/.local/share/applications/quartus_prime_lite_25_1.desktop
 
 if [[ ! $PATH =~ "$INSTALL_PATH/questa_fse/bin" ]]; then
     echo 'export PATH=$PATH:'$INSTALL_PATH'/questa_fse/bin' >> ~/.bashrc
