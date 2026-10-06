@@ -7,7 +7,7 @@
 HOME_DIR="/home/$USER"
 INSTALL_PATH="/home/$USER/.altera_lite/25.1"
 DOWNLOAD_URL="https://qip.franciscoribeiro.pt/installer/25.1/quartus-lite.tar.gz"
-TMP_DIR="/tmp/quartus-prime-lite-installer-25-1"
+TMP_DIR="$HOME_DIR/.cache/quartus-prime-lite-installer-25-1"
 CFG_DIR="/etc/glua/quartus-installer-25-1"
 CFG_FILE="$CFG_DIR/quartus-installer.conf"
 
@@ -519,6 +519,7 @@ questa_license() {
     fi
     cp "$LICENSE_PATH" "$INSTALL_PATH/questa_license.dat"
     echo 'export LM_LICENSE_FILE='$INSTALL_PATH'/questa_license.dat' >> ~/.bashrc
+    echo 'export SALT_LICENSE_SERVER='$INSTALL_PATH'/questa_license.dat' >> ~/.bashrc
 }
 
 final_setup() {
